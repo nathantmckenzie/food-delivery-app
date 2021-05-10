@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/client";
 import ADD_RESTAURANT from "../queries/queries";
 import { graphql } from "react-apollo";
 import { flowRight as compose } from "lodash";
@@ -15,9 +16,19 @@ const getDataQuery = gql`
   }
 `;
 
+const DELETE_RESTAURANT = gql`
+  mutation deleteRestaurant($id: ID!) {
+    deleteBook(id: $id) {
+      id
+      name
+    }
+  }
+`;
+
 function RestaurantList(props) {
   const [restaurants, setRestaurants] = useState();
   const data = props.getDataQuery;
+  const [deleteRestaurantMutation, { error }] = useMutation(DELETE_RESTAURANT);
 
   useEffect(() => {
     setRestaurants(data.restaurants);
@@ -33,6 +44,16 @@ function RestaurantList(props) {
       Restaurant List:{" "}
       {restaurants && restaurants !== undefined
         ? restaurants.map((restaurant) => {
+            const deleteRestaurant = (e) => {
+              e.stopPropagation();
+              deleteRestaurantMutation({
+                variables: {
+                  id: restaurant.id,
+                },
+                refetchQueries: [{ query: getDataQuery }],
+              });
+            };
+
             return (
               <li>
                 {restaurant.name}

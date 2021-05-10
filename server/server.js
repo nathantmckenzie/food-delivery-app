@@ -12,6 +12,9 @@ const {
   GraphQLBoolean,
 } = require("graphql");
 const cors = require("cors");
+const Restaurant = require("./models/restaurants");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv").config();
 
 app.use(cors());
 
@@ -43,6 +46,13 @@ const restaurants = [
   },
 ];
 
+mongoose.connect(
+  `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.PASSWORD}@cluster0.qxpds.mongodb.net/foodDelivery?retryWrites=true&w=majority`
+);
+mongoose.connection.once("open", () => {
+  console.log("!connected to database");
+});
+
 const RestaurantType = new GraphQLObjectType({
   name: "Restaurant",
   fields: () => ({
@@ -60,7 +70,9 @@ const RootQueryType = new GraphQLObjectType({
   fields: () => ({
     restaurants: {
       type: new GraphQLList(RestaurantType),
-      resolve: () => restaurants,
+      resolve(parent, args) {
+        return Restaurant.find({});
+      },
     },
   }),
 });
@@ -76,14 +88,22 @@ const RootMutationType = new GraphQLObjectType({
         description: { type: GraphQLString },
       },
       resolve: (parent, args) => {
-        const restaurant = {
+        let restaurant = new Restaurant({
           id: restaurants.length + 1,
           name: args.name,
           shortDescription: args.shortDescription,
           description: args.description,
-        };
-        restaurants.push(restaurant);
-        return restaurant;
+        });
+        return restaurant.save();
+      },
+    },
+    deleteRestaurant: {
+      type: RestaurantType,
+      args: {
+        name: { type: GraphQLString },
+      },
+      resolve: (parent, args) => {
+        return restaurants.filter((restaurant) => restaurant.name !== "Burgs");
       },
     },
   }),

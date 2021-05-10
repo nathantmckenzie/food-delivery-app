@@ -3,6 +3,7 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
 import { ApolloProvider as ApolloHooksProvider } from "@apollo/react-hooks";
 import RestaurantList from "./components/RestaurantList";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 // apollo client setup
 const client = new ApolloClient({
@@ -15,13 +16,19 @@ const client = new ApolloClient({
 
 function App() {
   return (
-    <ApolloProvider client={client}>
-      <ApolloHooksProvider client={client}>
-        <div>
-          <RestaurantList />
-        </div>
-      </ApolloHooksProvider>
-    </ApolloProvider>
+    <Router>
+      <ApolloProvider client={client}>
+        <ApolloHooksProvider client={client}>
+          <div>
+            <Switch>
+              <Route path="/restaurants">
+                <RestaurantList />
+              </Route>
+            </Switch>
+          </div>
+        </ApolloHooksProvider>
+      </ApolloProvider>
+    </Router>
   );
 }
 
