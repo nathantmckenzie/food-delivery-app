@@ -55,12 +55,13 @@ function RestaurantList(props) {
             };
 
             return (
-              <li>
+              <li onClick={() => console.log("restaurant.id", restaurant._id)}>
                 {restaurant.name}
                 <br />
                 {restaurant.shortDescription}
                 <br />
                 {restaurant.description}
+                <span onClick={deleteRestaurant}>X</span>
               </li>
             );
           })

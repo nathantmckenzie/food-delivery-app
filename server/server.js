@@ -18,34 +18,6 @@ const dotenv = require("dotenv").config();
 
 app.use(cors());
 
-const restaurants = [
-  {
-    id: 1,
-    name: "Chuck E. Cheese",
-    shortDescription: "This place is the bee's knees",
-    description:
-      "This place truly is the bee's knees - best tater tots in the midwest",
-    menuID: 1,
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Burger King",
-    shortDescription: "We salt our patties",
-    description: "You want it, we got it",
-    menuID: 2,
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "PF Changs",
-    shortDescription: "10 days Salmonella Free",
-    description: "Read the short description",
-    menuID: 3,
-    isActive: true,
-  },
-];
-
 mongoose.connect(
   `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.PASSWORD}@cluster0.qxpds.mongodb.net/foodDelivery?retryWrites=true&w=majority`
 );
@@ -62,6 +34,7 @@ const RestaurantType = new GraphQLObjectType({
     description: { type: GraphQLString },
     menuID: { type: GraphQLID },
     isActive: { type: GraphQLBoolean },
+    restaurantID: { type: GraphQLID },
   }),
 });
 
@@ -86,13 +59,16 @@ const RootMutationType = new GraphQLObjectType({
         name: { type: GraphQLNonNull(GraphQLString) },
         shortDescription: { type: GraphQLString },
         description: { type: GraphQLString },
+        isActive: { type: GraphQLBoolean },
+        restaurantID: { type: GraphQLInt },
       },
       resolve: (parent, args) => {
         let restaurant = new Restaurant({
-          id: restaurants.length + 1,
+          restaurantID: Date.now(),
           name: args.name,
           shortDescription: args.shortDescription,
           description: args.description,
+          isActive: true,
         });
         return restaurant.save();
       },
@@ -103,7 +79,7 @@ const RootMutationType = new GraphQLObjectType({
         name: { type: GraphQLString },
       },
       resolve: (parent, args) => {
-        return restaurants.filter((restaurant) => restaurant.name !== "Burgs");
+        return Restaurant.find({ name: args.name }).deleteOne();
       },
     },
   }),
