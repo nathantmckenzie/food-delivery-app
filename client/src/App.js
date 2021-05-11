@@ -1,9 +1,12 @@
 import "./App.css";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "react-apollo";
+import ApolloClient, { gql } from "apollo-boost";
+import { useState } from "react";
+import { ApolloProvider, graphql } from "react-apollo";
+import { useQuery, useMutation } from "@apollo/client";
 import { ApolloProvider as ApolloHooksProvider } from "@apollo/react-hooks";
 import RestaurantList from "./components/RestaurantList";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Restaurant from "./components/Restaurant";
 
 // apollo client setup
 const client = new ApolloClient({
@@ -14,7 +17,23 @@ const client = new ApolloClient({
   },
 });
 
+const getDataQuery = gql`
+  {
+    restaurants {
+      name
+      shortDescription
+      description
+      id
+    }
+  }
+`;
+
 function App() {
+  const [name, setName] = useState();
+  const [restaurant, setRestaurant] = useState();
+
+  console.log("restaurant", restaurant);
+
   return (
     <Router>
       <ApolloProvider client={client}>
@@ -22,7 +41,13 @@ function App() {
           <div>
             <Switch>
               <Route path="/restaurants">
-                <RestaurantList />
+                <RestaurantList
+                  setName={setName}
+                  setRestaurant={setRestaurant}
+                />
+              </Route>
+              <Route path={`/${name}`}>
+                <Restaurant restaurant={restaurant} />
               </Route>
             </Switch>
           </div>

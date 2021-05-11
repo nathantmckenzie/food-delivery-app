@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { gql } from "apollo-boost";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Restaurant from "./Restaurant";
 
 const getDataQuery = gql`
   {
@@ -7,11 +9,12 @@ const getDataQuery = gql`
       name
       shortDescription
       description
+      id
     }
   }
 `;
 
-export default function AddRestaurant(props) {
+export default function AddRestaurant(props, restaurants) {
   const [name, setName] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [description, setDescription] = useState("");
@@ -29,6 +32,13 @@ export default function AddRestaurant(props) {
             },
             refetchQueries: [{ query: getDataQuery }],
           });
+          {
+            <Route
+              exact
+              path={`/restaurants/${name}`}
+              component={Restaurant}
+            />;
+          }
         }}
       >
         <input
