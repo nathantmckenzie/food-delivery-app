@@ -51,12 +51,17 @@ function RestaurantList(props) {
   }, [data]);
 
   useEffect(() => {
-    console.log(restaurants);
+    console.log("RESTUAN", restaurants);
   }, [restaurants]);
 
   return (
     <div>
-      <AddRestaurant props={props} restaurants={restaurants} />
+      <AddRestaurant
+        props={props}
+        restaurants={restaurants}
+        setRestaurants={setRestaurants}
+        data={data}
+      />
       Restaurant List:{" "}
       {restaurants && restaurants !== undefined
         ? restaurants.map((restaurant) => {

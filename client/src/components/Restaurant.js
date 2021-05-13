@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 const ADD_MENU_ITEM = gql`
   mutation addMenuItem($name: String!, $menuId: String!) {
@@ -17,10 +17,12 @@ const GET_RESTAURANT = gql`
     restaurant(id: "6099ade055e5e235d4012513") {
       name
       description
+      menuId
       menuItems {
         name
         price
         description
+        menuId
         id
       }
     }
@@ -36,26 +38,29 @@ const DELETE_MENU_ITEM = gql`
   }
 `;
 
-export default function Restaurant({ restaurant, getDataQuery }) {
+export default function Restaurant({ restaurant, setRestaurant }) {
   const [menuItemName, setMenuItemName] = useState();
   const [menuItemDescription, setMenuItemDescription] = useState();
   const [menuItemPrice, setMenuItemPrice] = useState();
 
-  console.log("GEtDAYAQUERy", getDataQuery);
-  // const data = props.GET_RESTAURANT;
+  const { loading, data } = useQuery(GET_RESTAURANT);
   const [addMenuItemMutation, { error }] = useMutation(ADD_MENU_ITEM);
   const [deleteMenuItemMutation] = useMutation(DELETE_MENU_ITEM);
 
-  // useEffect(() => {
-  //   console.log("DATA", data);
-  // }, [data]);
+  useEffect(() => {
+    if (data) {
+      setRestaurant(data.restaurant);
+      console.log("DATAAA", data.restaurant);
+    }
+  }, [data]);
 
   return (
     <div>
       {restaurant.name}
       <br />
       {restaurant.shortDescription}
-      <br /> {restaurant.description}
+      <br />
+      {restaurant.description}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -103,6 +108,7 @@ export default function Restaurant({ restaurant, getDataQuery }) {
                   variables: {
                     id: menuItem.id,
                   },
+                  refetchQueries: [{ query: GET_RESTAURANT }],
                 })
               }
             >

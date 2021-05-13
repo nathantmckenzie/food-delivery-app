@@ -47,7 +47,10 @@ function App() {
                 />
               </Route>
               <Route path={`/${name}`}>
-                <Restaurant restaurant={restaurant} />
+                <Restaurant
+                  restaurant={restaurant}
+                  setRestaurant={setRestaurant}
+                />
               </Route>
             </Switch>
           </div>

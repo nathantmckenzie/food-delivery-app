@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { gql } from "apollo-boost";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Restaurant from "./Restaurant";
@@ -22,6 +22,10 @@ export default function AddRestaurant(props, restaurants) {
   const [description, setDescription] = useState("");
 
   let randomstring = Math.random().toString(36).slice(-8);
+
+  useEffect(() => {
+    console.log("PRO", props.data.restaurants);
+  }, [props.data.restaurants]);
 
   return (
     <div className="add-restaurant-form">
