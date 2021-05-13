@@ -4,9 +4,10 @@ import { useState } from "react";
 import { ApolloProvider, graphql } from "react-apollo";
 import { useQuery, useMutation } from "@apollo/client";
 import { ApolloProvider as ApolloHooksProvider } from "@apollo/react-hooks";
-import RestaurantList from "./components/RestaurantList";
+import RestaurantList from "./admin-components/RestaurantList";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Restaurant from "./components/Restaurant";
+import Restaurant from "./admin-components/Restaurant";
+import Home from "./customer-components/Home";
 
 // apollo client setup
 const client = new ApolloClient({
@@ -40,6 +41,9 @@ function App() {
         <ApolloHooksProvider client={client}>
           <div>
             <Switch>
+              <Route path="/home">
+                <Home restaurant={restaurant} setRestaurant={setRestaurant} />
+              </Route>
               <Route path="/restaurants">
                 <RestaurantList
                   setName={setName}

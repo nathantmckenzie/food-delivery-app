@@ -3,11 +3,12 @@ import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/client";
 
 const ADD_MENU_ITEM = gql`
-  mutation addMenuItem($name: String!, $menuId: String!) {
-    addMenuItem(name: $name, menuId: $menuId) {
+  mutation addMenuItem($name: String!, $menuId: String!, $price: Int!) {
+    addMenuItem(name: $name, menuId: $menuId, price: $price) {
       id
       name
       menuId
+      price
     }
   }
 `;
@@ -54,6 +55,8 @@ export default function Restaurant({ restaurant, setRestaurant }) {
     }
   }, [data]);
 
+  console.log("menuItemPRice", typeof menuItemPrice);
+
   return (
     <div>
       {restaurant.name}
@@ -68,6 +71,7 @@ export default function Restaurant({ restaurant, setRestaurant }) {
             variables: {
               name: menuItemName,
               menuId: restaurant.menuId,
+              price: menuItemPrice,
             },
             refetchQueries: [{ query: GET_RESTAURANT }],
           });
@@ -88,13 +92,13 @@ export default function Restaurant({ restaurant, setRestaurant }) {
         <br />
         <input
           value={menuItemPrice}
-          onChange={(e) => setMenuItemPrice(e.target.value)}
+          type="number"
+          onChange={(e) => setMenuItemPrice(Number(e.target.value))}
           placeholder="Price"
         ></input>
         <br />
         <button>Add Menu Item</button>
       </form>
-      {console.log("RESTAURANT", restaurant)}
       {restaurant.menuItems.map((menuItem) => {
         return (
           <li>
