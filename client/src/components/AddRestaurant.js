@@ -10,6 +10,8 @@ const getDataQuery = gql`
       shortDescription
       description
       id
+      menuId
+      isActive
     }
   }
 `;
@@ -18,6 +20,8 @@ export default function AddRestaurant(props, restaurants) {
   const [name, setName] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [description, setDescription] = useState("");
+
+  let randomstring = Math.random().toString(36).slice(-8);
 
   return (
     <div className="add-restaurant-form">
@@ -29,6 +33,8 @@ export default function AddRestaurant(props, restaurants) {
               name,
               shortDescription,
               description,
+              menuId: randomstring,
+              isActive: true,
             },
             refetchQueries: [{ query: getDataQuery }],
           });

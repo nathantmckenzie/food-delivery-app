@@ -5,11 +5,15 @@ const ADD_RESTAURANT = gql`
     $name: String!
     $shortDescription: String!
     $description: String!
+    $isActive: Boolean!
+    $menuId: String!
   ) {
     addRestaurant(
       name: $name
       shortDescription: $shortDescription
       description: $description
+      menuId: $menuId
+      isActive: $isActive
     ) {
       name
       id

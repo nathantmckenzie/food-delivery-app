@@ -16,6 +16,14 @@ const getDataQuery = gql`
       shortDescription
       description
       id
+      isActive
+      menuId
+      menuItems {
+        id
+        name
+        description
+        price
+      }
     }
   }
 `;
@@ -34,6 +42,7 @@ function RestaurantList(props) {
   const [id, setId] = useState();
 
   let history = useHistory();
+  console.log("PROPS BABY", props);
   const data = props.getDataQuery;
   const [deleteRestaurantMutation, { error }] = useMutation(DELETE_RESTAURANT);
 

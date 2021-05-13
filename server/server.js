@@ -14,6 +14,7 @@ const {
 const cors = require("cors");
 const Restaurant = require("./models/restaurant");
 const MenuItem = require("./models/menuItems");
+const Menu = require("./models/menu");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 
@@ -33,18 +34,18 @@ const MenuItemType = new GraphQLObjectType({
     name: { type: GraphQLString },
     description: { type: GraphQLString },
     price: { type: GraphQLInt },
-    menuId: { type: GraphQLID },
+    menuId: { type: GraphQLString },
   }),
 });
 
 const MenuType = new GraphQLObjectType({
   name: "Menu",
   fields: () => ({
-    id: { type: GraphQLID },
+    id: { type: GraphQLString },
     menuItems: {
       type: new GraphQLList(MenuItemType),
       resolve(parent, args) {
-        return MenuItemType.find({});
+        return MenuItem.find((menuItem) => menuItem.menuId === parent.id);
       },
     },
   }),
@@ -57,14 +58,16 @@ const RestaurantType = new GraphQLObjectType({
     name: { type: GraphQLString },
     shortDescription: { type: GraphQLString },
     description: { type: GraphQLString },
-    menuId: {
-      type: MenuType,
+    menuId: { type: GraphQLID },
+    isActive: { type: GraphQLBoolean },
+    menuItems: {
+      type: new GraphQLList(MenuItemType),
       resolve(parent, args) {
-        return Menu.findById(parent.menuId);
+        console.log("parent", parent);
+        console.log("menuItem", MenuItem.find({ menuId: parent.menuId }));
+        return MenuItem.find({ menuId: parent.menuId });
       },
     },
-    isActive: { type: GraphQLBoolean },
-    restaurantID: { type: GraphQLID },
   }),
 });
 
@@ -77,10 +80,30 @@ const RootQueryType = new GraphQLObjectType({
         return Restaurant.find({});
       },
     },
+    restaurant: {
+      type: RestaurantType,
+      args: { id: { type: GraphQLString } },
+      resolve(parent, args) {
+        return Restaurant.findById(args.id);
+      },
+    },
     menuItem: {
       type: new GraphQLList(MenuItemType),
       resolve(parent, args) {
         return MenuItem.find({});
+      },
+    },
+    menu: {
+      type: MenuType,
+      args: { id: { type: GraphQLString } },
+      resolve(parent, args) {
+        return Menu.findById(args.id);
+      },
+    },
+    menus: {
+      type: GraphQLList(MenuType),
+      resolve(parent, args) {
+        return Menu.find({});
       },
     },
   }),
@@ -96,7 +119,7 @@ const RootMutationType = new GraphQLObjectType({
         shortDescription: { type: GraphQLString },
         description: { type: GraphQLString },
         isActive: { type: GraphQLBoolean },
-        menuId: { type: GraphQLID },
+        menuId: { type: GraphQLString },
       },
       resolve: (parent, args) => {
         let restaurant = new Restaurant({
@@ -105,6 +128,7 @@ const RootMutationType = new GraphQLObjectType({
           shortDescription: args.shortDescription,
           description: args.description,
           isActive: true,
+          menuId: args.menuId,
         });
         return restaurant.save();
       },
@@ -125,7 +149,7 @@ const RootMutationType = new GraphQLObjectType({
         name: { type: GraphQLString },
         description: { type: GraphQLString },
         price: { type: GraphQLInt },
-        menuId: { type: GraphQLID },
+        menuId: { type: GraphQLString },
       },
       resolve: (parent, args) => {
         let menuItem = new MenuItem({
@@ -136,6 +160,15 @@ const RootMutationType = new GraphQLObjectType({
           menuId: args.menuId,
         });
         return menuItem.save();
+      },
+    },
+    deleteMenuItem: {
+      type: MenuItemType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve: (parent, args) => {
+        return MenuItem.find({ id: args.id }).deleteOne();
       },
     },
   }),
