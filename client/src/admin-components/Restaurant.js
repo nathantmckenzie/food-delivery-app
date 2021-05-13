@@ -55,8 +55,6 @@ export default function Restaurant({ restaurant, setRestaurant }) {
     }
   }, [data]);
 
-  console.log("menuItemPRice", typeof menuItemPrice);
-
   return (
     <div>
       {restaurant.name}

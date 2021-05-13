@@ -63,8 +63,6 @@ const RestaurantType = new GraphQLObjectType({
     menuItems: {
       type: new GraphQLList(MenuItemType),
       resolve(parent, args) {
-        console.log("parent", parent);
-        console.log("menuItem", MenuItem.find({ menuId: parent.menuId }));
         return MenuItem.find({ menuId: parent.menuId });
       },
     },
@@ -85,6 +83,13 @@ const RootQueryType = new GraphQLObjectType({
       args: { id: { type: GraphQLString } },
       resolve(parent, args) {
         return Restaurant.findById(args.id);
+      },
+    },
+    restaurantByName: {
+      type: RestaurantType,
+      args: { name: { type: GraphQLString } },
+      resolve(parent, args) {
+        return Restaurant.findOne({ name: args.name });
       },
     },
     menuItem: {
