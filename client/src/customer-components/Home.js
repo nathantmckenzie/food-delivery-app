@@ -49,13 +49,18 @@ export default function Home({ restaurant, setRestaurant }) {
   const [search, setSearch] = useState("");
 
   const { loading, data } = useQuery(GET_RESTAURANTS);
-  //   const { something, data: searchData } = useQuery(GET_RESTAURANT_BY_NAME, {
-  //     variables: { name: search ? search : "" },
-  //   });
-  const [searchRestaurant, { data: searchData }] = useLazyQuery(
+  const [searchRestaurant, { data: searchData, error }] = useLazyQuery(
     GET_RESTAURANT_BY_NAME,
     {
       variables: { name: search },
+    },
+    {
+      errorPolicy: "all",
+    },
+    {
+      onError() {
+        console.error("11:39", error);
+      },
     }
   );
 
@@ -77,6 +82,7 @@ export default function Home({ restaurant, setRestaurant }) {
 
   return (
     <div>
+      {console.log("11:55", error)}
       <NavBar
         input={input}
         setInput={setInput}
@@ -90,16 +96,17 @@ export default function Home({ restaurant, setRestaurant }) {
               setRestaurant(restaurant);
               history.push(`/${restaurant.name}`);
             }
-
-            return (
-              <div className="home-page">
-                <div onClick={toRestaurantPage}>
-                  <span className="restaurant-name">{restaurant.name}</span>
-                  <br />
-                  {restaurant.shortDescription}
+            if (restaurant) {
+              return (
+                <div className="home-page">
+                  <div onClick={toRestaurantPage}>
+                    <span className="restaurant-name">{restaurant.name}</span>
+                    <br />
+                    {restaurant.shortDescription}
+                  </div>
                 </div>
-              </div>
-            );
+              );
+            }
           })
         : null}
     </div>

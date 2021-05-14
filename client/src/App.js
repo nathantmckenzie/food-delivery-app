@@ -33,7 +33,7 @@ function App() {
   const [name, setName] = useState();
   const [restaurant, setRestaurant] = useState();
 
-  console.log("restaurant", restaurant);
+  console.log("restauranttt", restaurant);
 
   return (
     <Router>

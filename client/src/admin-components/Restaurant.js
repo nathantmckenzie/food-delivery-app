@@ -14,8 +14,8 @@ const ADD_MENU_ITEM = gql`
 `;
 
 const GET_RESTAURANT = gql`
-  {
-    restaurant(id: "6099ade055e5e235d4012513") {
+  query restaurant($id: String!) {
+    restaurant(id: $id) {
       name
       description
       menuId
@@ -31,7 +31,7 @@ const GET_RESTAURANT = gql`
 `;
 
 const DELETE_MENU_ITEM = gql`
-  mutation deleteMenuItem($id: ID!) {
+  mutation deleteMenuItem($id: String!) {
     deleteMenuItem(id: $id) {
       id
       name
@@ -44,7 +44,9 @@ export default function Restaurant({ restaurant, setRestaurant }) {
   const [menuItemDescription, setMenuItemDescription] = useState();
   const [menuItemPrice, setMenuItemPrice] = useState();
 
-  const { loading, data } = useQuery(GET_RESTAURANT);
+  const { loading, data } = useQuery(GET_RESTAURANT, {
+    variables: { id: "609aed1258b2d4bb555b2c4c" },
+  });
   const [addMenuItemMutation, { error }] = useMutation(ADD_MENU_ITEM);
   const [deleteMenuItemMutation] = useMutation(DELETE_MENU_ITEM);
 
@@ -105,14 +107,14 @@ export default function Restaurant({ restaurant, setRestaurant }) {
             {menuItem.description}
             <br />
             <span
-              onClick={() =>
+              onClick={() => {
                 deleteMenuItemMutation({
                   variables: {
                     id: menuItem.id,
                   },
                   refetchQueries: [{ query: GET_RESTAURANT }],
-                })
-              }
+                });
+              }}
             >
               X
             </span>
