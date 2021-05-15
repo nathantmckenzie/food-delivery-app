@@ -14,6 +14,7 @@ const {
 const cors = require("cors");
 const Restaurant = require("./models/restaurant");
 const MenuItem = require("./models/menuItems");
+const MenuItemOptions = require("./models/menuItemOptions");
 const Menu = require("./models/menu");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
@@ -27,6 +28,17 @@ mongoose.connection.once("open", () => {
   console.log("!connected to database");
 });
 
+const MenuItemOptionsType = new GraphQLObjectType({
+  name: "MenuItemOptions",
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    price: { type: GraphQLInt },
+    menuItemId: { type: GraphQLString },
+    calories: { type: GraphQLInt },
+  }),
+});
+
 const MenuItemType = new GraphQLObjectType({
   name: "MenuItem",
   fields: () => ({
@@ -34,7 +46,13 @@ const MenuItemType = new GraphQLObjectType({
     name: { type: GraphQLString },
     description: { type: GraphQLString },
     price: { type: GraphQLInt },
-    menuId: { type: GraphQLString },
+    menuId: { type: GraphQLID },
+    menuItemOptions: {
+      type: new GraphQLList(MenuItemOptionsType),
+      resolve(parent, args) {
+        return MenuItemOptions.find({ menuItemId: "1621011915259" });
+      },
+    },
   }),
 });
 
@@ -96,6 +114,12 @@ const RootQueryType = new GraphQLObjectType({
       type: new GraphQLList(MenuItemType),
       resolve(parent, args) {
         return MenuItem.find({});
+      },
+    },
+    menuItemOptions: {
+      type: new GraphQLList(MenuItemOptionsType),
+      resolve(parent, args) {
+        return MenuItemOptions.find({});
       },
     },
     menu: {
@@ -165,6 +189,26 @@ const RootMutationType = new GraphQLObjectType({
           menuId: args.menuId,
         });
         return menuItem.save();
+      },
+    },
+    addMenuItemOptions: {
+      type: MenuItemOptionsType,
+      args: {
+        id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        price: { type: GraphQLInt },
+        menuItemId: { type: GraphQLInt },
+        calories: { type: GraphQLInt },
+      },
+      resolve: (parent, args) => {
+        let menuItemOptions = new MenuItemOptions({
+          id: Date.now(),
+          name: args.name,
+          price: args.price,
+          menuItemId: args.menuItemId,
+          calories: args.calories,
+        });
+        return menuItemOptions.save();
       },
     },
     deleteMenuItem: {

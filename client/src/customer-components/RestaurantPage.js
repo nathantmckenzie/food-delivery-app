@@ -31,6 +31,7 @@ export default function RestaurantPage({ restaurant, setRestaurant }) {
                     {showModal ? (
                       <MenuItemModal
                         name={menuItem.name}
+                        description={menuItem.description}
                         price={menuItem.price}
                       />
                     ) : null}

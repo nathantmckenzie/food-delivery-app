@@ -72,6 +72,19 @@
   margin-top: 30px;
 }
 
+.test-modal {
+  margin-top: 1000px;
+}
+
+.exit-menu-item-modal {
+  cursor: pointer;
+}
+
+.menu-item-modal-name {
+  margin-top: 20px;
+  font-size: xx-large;
+}
+
 @media screen and (max-width:1000px) {
   .restaurant-page {
     display: grid;

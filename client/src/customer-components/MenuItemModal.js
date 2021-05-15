@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
+import Button from "./AddToCartButton";
 
 function getModalStyle() {
   const top = 50;
@@ -16,15 +17,22 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: 400,
+    width: 500,
+    height: "90%",
+    borderRadius: "3%",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    display: "grid",
+    gridTemplateRows: "93% 7%",
+  },
+  items: {
+    overflowY: "scroll",
   },
 }));
 
-export default function SimpleModal({ name, price }) {
+export default function SimpleModal({ name, price, description }) {
   const classes = useStyles();
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
@@ -38,16 +46,6 @@ export default function SimpleModal({ name, price }) {
     setOpen(false);
   };
 
-  const body = (
-    <div style={modalStyle} className={classes.paper}>
-      <h2 id="simple-modal-title">Text in a modal</h2>
-      <p id="simple-modal-description">
-        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-      </p>
-      <SimpleModal />
-    </div>
-  );
-
   return (
     <div>
       <Modal
@@ -57,10 +55,18 @@ export default function SimpleModal({ name, price }) {
         aria-describedby="simple-modal-description"
       >
         <div style={modalStyle} className={classes.paper}>
-          hi
-          {name ? name : null}
-          {price ? price : null}
-          {/* <SimpleModal /> */}
+          <div className={classes.items}>
+            <div className="exit-menu-item-modal" onClick={handleClose}>
+              X
+            </div>
+            <div className="menu-item-modal-name">{name ? name : null}</div>
+            <div>{description ? description : null}</div>
+            <div>{price ? price : null}</div>
+            <div className="test-modal">.</div>
+          </div>
+          <div className={classes.bottomRow}>
+            <Button price={price}>Add to cart - CA${price}</Button>
+          </div>
         </div>
       </Modal>
     </div>
