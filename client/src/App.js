@@ -8,6 +8,7 @@ import RestaurantList from "./admin-components/RestaurantList";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Restaurant from "./admin-components/Restaurant";
 import Home from "./customer-components/Home";
+import RestaurantPage from "./customer-components/RestaurantPage";
 
 // apollo client setup
 const client = new ApolloClient({
@@ -42,7 +43,11 @@ function App() {
           <div>
             <Switch>
               <Route path="/home">
-                <Home restaurant={restaurant} setRestaurant={setRestaurant} />
+                <Home
+                  restaurant={restaurant}
+                  setRestaurant={setRestaurant}
+                  setName={setName}
+                />
               </Route>
               <Route path="/restaurants">
                 <RestaurantList
@@ -50,8 +55,14 @@ function App() {
                   setRestaurant={setRestaurant}
                 />
               </Route>
-              <Route path={`/${name}`}>
+              <Route path={`/admin/${name}`}>
                 <Restaurant
+                  restaurant={restaurant}
+                  setRestaurant={setRestaurant}
+                />
+              </Route>
+              <Route path={`/${name}`}>
+                <RestaurantPage
                   restaurant={restaurant}
                   setRestaurant={setRestaurant}
                 />

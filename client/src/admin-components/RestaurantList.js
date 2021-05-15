@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import ADD_RESTAURANT from "../queries/queries";
 import { graphql } from "react-apollo";
 import { flowRight as compose } from "lodash";
@@ -8,6 +8,7 @@ import AddRestaurant from "./AddRestaurant";
 import { useHistory } from "react-router-dom";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Restaurant from "./Restaurant";
+import LoadingSpinner from "../customer-components/LoadingSpinner";
 
 const getDataQuery = gql`
   {
@@ -44,6 +45,7 @@ function RestaurantList(props) {
   let history = useHistory();
   console.log("PROPS BABY", props);
   const data = props.getDataQuery;
+  const { loading } = useQuery(getDataQuery);
   const [deleteRestaurantMutation, { error }] = useMutation(DELETE_RESTAURANT);
 
   useEffect(() => {
@@ -77,7 +79,7 @@ function RestaurantList(props) {
 
             function toRestaurantPage() {
               props.setRestaurant(restaurant);
-              history.push(`/${restaurant.name}`);
+              history.push(`/admin/${restaurant.name}`);
             }
 
             return (

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
-import { graphql } from "react-apollo";
 import NavBar from "./NavBar";
 import { useHistory } from "react-router-dom";
+import LoadingSpinner from "./LoadingSpinner";
+import emptySearchImage from "../images/empty-search.svg";
+import RestaurantPage from "./RestaurantPage";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 const GET_RESTAURANTS = gql`
   {
@@ -43,7 +46,7 @@ const GET_RESTAURANT_BY_NAME = gql`
   }
 `;
 
-export default function Home({ restaurant, setRestaurant }) {
+export default function Home({ restaurant, setRestaurant, setName }) {
   const [restaurants, setRestaurants] = useState();
   const [input, setInput] = useState("");
   const [search, setSearch] = useState("");
@@ -90,10 +93,17 @@ export default function Home({ restaurant, setRestaurant }) {
         setSearch={setSearch}
         searchRestaurant={searchRestaurant}
       />
+      {loading ? <LoadingSpinner /> : null}
       {restaurants && restaurants !== undefined
         ? restaurants.map((restaurant) => {
             function toRestaurantPage() {
               setRestaurant(restaurant);
+              setName(restaurant.name);
+              <Route
+                exact
+                path={`/${restaurant.name}`}
+                component={RestaurantPage}
+              />;
               history.push(`/${restaurant.name}`);
             }
             if (restaurant) {
@@ -105,6 +115,10 @@ export default function Home({ restaurant, setRestaurant }) {
                     {restaurant.shortDescription}
                   </div>
                 </div>
+              );
+            } else {
+              return (
+                <img className="empty-search-image" src={emptySearchImage} />
               );
             }
           })
