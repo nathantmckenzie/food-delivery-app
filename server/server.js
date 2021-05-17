@@ -50,7 +50,7 @@ const MenuItemType = new GraphQLObjectType({
     menuItemOptions: {
       type: new GraphQLList(MenuItemOptionsType),
       resolve(parent, args) {
-        return MenuItemOptions.find({ menuItemId: "1621011915259" });
+        return MenuItemOptions.find({ menuItemId: parent.id });
       },
     },
   }),
@@ -112,8 +112,9 @@ const RootQueryType = new GraphQLObjectType({
     },
     menuItem: {
       type: new GraphQLList(MenuItemType),
+      args: { menuId: { type: GraphQLString } },
       resolve(parent, args) {
-        return MenuItem.find({});
+        return MenuItem.find({ menuId: args.menuId });
       },
     },
     menuItemOptions: {
@@ -214,7 +215,7 @@ const RootMutationType = new GraphQLObjectType({
     deleteMenuItem: {
       type: MenuItemType,
       args: {
-        id: { type: GraphQLID },
+        id: { type: GraphQLString },
       },
       resolve: (parent, args) => {
         return MenuItem.find({ id: args.id }).deleteOne();
